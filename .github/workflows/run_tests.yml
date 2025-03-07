@@ -64,7 +64,7 @@ jobs:
             java-version: '21'
         - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.28.1/allure-2.28.1.tgz && sudo tar -zxvf allure-2.28.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.28.1/bin/allure /usr/bin/allure
         - name: Download all workflow run artifacts
-          uses: actions/download-artifact@v3
+          uses: actions/download-artifact@v4
         - run: allure generate -c allure-results -o _site
         - name: Store generated report
           uses: actions/upload-artifact@v4
