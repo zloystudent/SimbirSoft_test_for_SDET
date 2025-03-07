@@ -54,3 +54,5 @@ dkms.conf
 .vscode
 
 myenv
+__pycache__
+.pytest_cache

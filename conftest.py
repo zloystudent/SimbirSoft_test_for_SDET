@@ -6,10 +6,10 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def driver():
     options = Options()
-    options.add_argument("--window-size=1400,700")
+    options.add_argument("--headless")
     service = Service(executable_path=ChromeDriverManager().install())
     driver = webdriver.Chrome(options=options, service=service)
     wait = WebDriverWait(driver, 30, poll_frequency=1)
