@@ -1,7 +1,19 @@
 name: SimbirSoft_test_for_SDET
 
 on:
-    push
+    workflow_dispatch:
+        inputs:
+            deployment_target: 
+                description: Choosing the number of tests
+                required: true
+                default:
+                type: choice
+                options:
+                    - All_tests
+                    - Tests_by_xpath
+                    - Tests_by_CSS
+                    - Tests_by_ID
+
 
 jobs:
     test_run: 
@@ -17,5 +29,15 @@ jobs:
               run: sudo apt-get install google-chrome-stable
             - name: install dependencies
               run: pip install -r requirements.txt
-            - name: Run tests
-              run: pytest
+            - name: All_tests
+              if: github.event.inputs.deployment_target == 'All_tests'
+              run: pytest 
+            - name: Tests_by_xpath
+              if: github.event.inputs.deployment_target == 'Tests_by_xpath'
+              run: pytest tests/test_form_fields_by_xpath.py
+            - name: Tests_by_CSS
+              if: github.event.inputs.deployment_target == 'Tests_by_CSS'
+              run: pytest tests/test_form_fields_by_css.py
+            - name: Tests_by_ID
+              if: github.event.inputs.deployment_target == 'Tests_by_ID'
+              run: pytest tests/test_form_fields_by_id.py
