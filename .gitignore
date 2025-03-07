@@ -56,3 +56,4 @@ dkms.conf
 myenv
 __pycache__
 .pytest_cache
+.gitconfig
