@@ -12,76 +12,92 @@ on:
           - Tests_by_xpath
           - Tests_by_CSS
           - Tests_by_ID
+  schedule:
+    - cron: '0 */12 * * *'       
 permissions:
   contents: read
   pages: write
   id-token: write
 jobs:
-    test_run: 
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-            - name: Setup Python
-              uses: actions/setup-python@v4
-              with:
-                python-version: "3.12.3"
-            - name: Install Chrome
-              run: sudo apt-get install google-chrome-stable
-            - name: Install dependencies
-              run: pip install -r requirements.txt
-            - name: All_tests
-              if: github.event.inputs.deployment_target == 'All_tests'
-              run: pytest --alluredir=./allure-results
-              continue-on-error: true
-            - name: Tests_by_xpath
-              if: github.event.inputs.deployment_target == 'Tests_by_xpath'
-              run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results
-              continue-on-error: true
-            - name: Tests_by_CSS
-              if: github.event.inputs.deployment_target == 'Tests_by_CSS'
-              run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results
-              continue-on-error: true
-            - name: Tests_by_ID
-              if: github.event.inputs.deployment_target == 'Tests_by_ID'
-              run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results
-              continue-on-error: true
-            - name: Store allure results
-              uses: actions/upload-artifact@v4  
-              with:
-                name: allure-results
-                path: allure-results
-                retention-days: 1    
-    
-    generate-report:
-        runs-on: ubuntu-latest
-        needs: test_run
-        name: Generate report
-        steps:
-        - uses: actions/setup-java@v3
-          with:
-            distribution: 'microsoft' 
-            java-version: '21'
-        - run: curl -o allure-2.33.0.tgz -OLs https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.33.0/allure-commandline-2.33.0.tgz && sudo tar -zxvf allure-2.33.0.tgz -C /opt/ && sudo ln -s /opt/allure-2.33.0/bin/allure /usr/bin/allure
-        - name: Download all workflow run artifacts
-          uses: actions/download-artifact@v4
-        - run: allure generate -c allure-results -o _site
-        - name: Store generated report
-          uses: actions/upload-artifact@v4
-          with:
-            name: _site
-            path: _site
-            retention-days: 1
+  del__runs:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain__days: 30
+          keep__minimum__runs: 6
 
-    publish-report:
-        runs-on: ubuntu-latest
-        needs: generate-report
-        name: Report publication
-        steps:
-        - name: Download all workflow run artifacts
-          uses: actions/download-artifact@v4
-        - name: Upload Pages artifact
-          uses: actions/upload-pages-artifact@v3
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@v4
+  test_run: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12.3"
+      - name: Install Chrome
+        run: sudo apt-get install google-chrome-stable
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: All_tests
+        if: github.event.inputs.deployment_target == 'All_tests'
+        run: pytest --alluredir=./allure-results
+        continue-on-error: true
+      - name: Tests_by_xpath
+        if: github.event.inputs.deployment_target == 'Tests_by_xpath'
+        run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results
+        continue-on-error: true
+      - name: Tests_by_CSS
+        if: github.event.inputs.deployment_target == 'Tests_by_CSS'
+        run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results
+        continue-on-error: true
+      - name: Tests_by_ID
+        if: github.event.inputs.deployment_target == 'Tests_by_ID'
+        run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results
+        continue-on-error: true
+      - name: Store allure results
+        uses: actions/upload-artifact@v4  
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 1    
+  
+  generate-report:
+    runs-on: ubuntu-latest
+    needs: test_run
+    name: Generate report
+    steps:
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft' 
+          java-version: '21'
+      - run: curl -o allure-2.33.0.tgz -OLs https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.33.0/allure-commandline-2.33.0.tgz && sudo tar -zxvf allure-2.33.0.tgz -C /opt/ && sudo ln -s /opt/allure-2.33.0/bin/allure /usr/bin/allure
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+      - run: allure generate -c allure-results -o _site
+      - name: Store generated report
+        uses: actions/upload-artifact@v4
+        with:
+          name: _site
+          path: _site
+          retention-days: 1
+
+  publish-report:
+    runs-on: ubuntu-latest
+    needs: generate-report
+    name: Report publication
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
