@@ -14,6 +14,10 @@ on:
                     - Tests_by_CSS
                     - Tests_by_ID
 
+permissions:
+    contents: read
+    pages: write
+    id-token: write
 
 jobs:
     test_run: 
@@ -68,7 +72,7 @@ jobs:
               with:
                   name: _site
                   patch:
-                      _site
+                        _site
                   retention-days: 1   
     
     publish_report:
