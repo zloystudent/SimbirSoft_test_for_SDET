@@ -58,7 +58,7 @@ jobs:
     
     generate-report:
         runs-on: ubuntu-latest
-        needs: test
+        needs: test_run
         name: Generate report
         steps:
         - uses: actions/setup-java@v3
@@ -72,19 +72,19 @@ jobs:
         - name: Store generated report
           uses: actions/upload-artifact@v3
           with:
-          name: _site
-          path:
-            _site
-          retention-days: 1
+            name: _site
+            path: _site
+            retention-days: 1
 
-  publish-report:
-    runs-on: ubuntu-latest
-    needs: generate-report
-    name: Report publication
-    steps:
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
-      - name: Deploy to GitHub Pages
-        id: deployment
+    publish-report:
+        runs-on: ubuntu-latest
+        needs: generate-report
+        name: Report publication
+        steps:
+        - name: Download all workflow run artifacts
+          uses: actions/download-artifact@v3
+        - name: Upload Pages artifact
+          uses: actions/upload-pages-artifact@v2
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v1.2.9
