@@ -49,6 +49,8 @@ jobs:
               if: github.event.inputs.deployment_target == 'Tests_by_ID'
               run: pytest tests/test_form_fields_by_id.py --alluredir=allure-results
               continue-on-error: true
+            - name: Where is report
+              run: ls -la allure-results
             - name: Store allure results
               uses: actions/upload-artifact@v3   
               with:
