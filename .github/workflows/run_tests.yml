@@ -35,19 +35,19 @@ jobs:
               run: pip install -r requirements.txt
             - name: All_tests
               if: github.event.inputs.deployment_target == 'All_tests'
-              run: pytest --alluredir=allure-results
+              run: pytest --alluredir=./allure-results
               continue-on-error: true
             - name: Tests_by_xpath
               if: github.event.inputs.deployment_target == 'Tests_by_xpath'
-              run: pytest tests/test_form_fields_by_xpath.py --alluredir=allure-results
+              run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results
               continue-on-error: true
             - name: Tests_by_CSS
               if: github.event.inputs.deployment_target == 'Tests_by_CSS'
-              run: pytest tests/test_form_fields_by_css.py --alluredir=allure-results
+              run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results
               continue-on-error: true
             - name: Tests_by_ID
               if: github.event.inputs.deployment_target == 'Tests_by_ID'
-              run: pytest tests/test_form_fields_by_id.py --alluredir=allure-results
+              run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results
               continue-on-error: true
             - name: Store allure results
               uses: actions/upload-artifact@v3   
