@@ -57,3 +57,4 @@ myenv
 __pycache__
 .pytest_cache
 .gitconfig
+allure-results
