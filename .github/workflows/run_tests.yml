@@ -67,20 +67,10 @@ jobs:
           echo "test_executed=true" >> $GITHUB_OUTPUT
         continue-on-error: true
         id: id_tests
+
+      - name: Check allure-results directory
+        run: ls -la allure-results
       
-      - name: Store allure results
-        # Запускаем только если хотя бы один из тестов был выполнен
-        if: |
-          always() && 
-          (steps.all_tests.outputs.test_executed == 'true' || 
-           steps.xpath_tests.outputs.test_executed == 'true' || 
-           steps.css_tests.outputs.test_executed == 'true' || 
-           steps.id_tests.outputs.test_executed == 'true')
-        uses: actions/upload-artifact@v3   
-        with:
-          name: allure-results
-          path: allure-results
-          retention-days: 1
 
   generate-report:
     runs-on: ubuntu-latest
