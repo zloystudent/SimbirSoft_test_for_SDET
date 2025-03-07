@@ -1,6 +1,7 @@
 import pytest
 import allure
 from pages.form_fields_page_by_id import FormFieldsPageByID
+from enums_errors.global_errors import GlobalErrorMessages
 
 
 @allure.epic("Web Forms Testing")
@@ -13,40 +14,40 @@ class TestFormFieldsByID:
         """Test the name input field."""
         form_page = FormFieldsPageByID(driver)
         form_page.enter_name("meleaged")
-        assert form_page.get_name_value() == "meleaged"
+        assert form_page.get_name_value() == "meleaged",GlobalErrorMessages.TEST_NAME_INPUT_ERROR.value
 
     def test_password_input(self, driver):
         """Test the password input field."""
         form_page = FormFieldsPageByID(driver)
         form_page.enter_password("meleaged")
-        assert form_page.get_password_value() == "meleaged"
+        assert form_page.get_password_value() == "meleaged",GlobalErrorMessages.TEST_PASSWORD_INPUT_ERROR.value
 
     def test_checkbox_selection(self, driver):
         """Test checkbox selection for drinks."""
         form_page = FormFieldsPageByID(driver)
         form_page.select_milk_checkbox()
-        assert form_page.is_checkbox_selected(form_page.MILK_CHECKBOX)
+        assert form_page.is_checkbox_selected(form_page.MILK_CHECKBOX),GlobalErrorMessages.TEST_CHECKBOX_INPUT_ERROR.value
 
         form_page.select_coffee_checkbox()
-        assert form_page.is_checkbox_selected(form_page.COFFEE_CHECKBOX)
+        assert form_page.is_checkbox_selected(form_page.COFFEE_CHECKBOX),GlobalErrorMessages.TEST_CHECKBOX_INPUT_ERROR.value
 
     def test_radio_button_selection(self, driver):
         """Test radio button selection for color."""
         form_page = FormFieldsPageByID(driver)
         form_page.select_yellow_radio()
-        assert form_page.is_radio_selected(form_page.YELLOW_RADIO)
+        assert form_page.is_radio_selected(form_page.YELLOW_RADIO), GlobalErrorMessages.TEST_RADIO_BUTTON_SELECTION_ERROR.value
 
     def test_email_input(self, driver):
         """Test the email input field."""
         form_page = FormFieldsPageByID(driver)
         form_page.enter_email("name@example.com")
-        assert form_page.get_email_value() == "name@example.com"
+        assert form_page.get_email_value() == "name@example.com", GlobalErrorMessages.TEST_EMAIL_INPUT_ERROR.value
 
     def test_automation_dropdown(self, driver):
         """Test the automation dropdown selection."""
         form_page = FormFieldsPageByID(driver)
         form_page.select_automation_yes()
-        assert form_page.get_selected_automation_value() == "yes"
+        assert form_page.get_selected_automation_value() == "yes", GlobalErrorMessages.TEST_AUTOMATION_DPOPDOWN_ERROR.value
 
     def test_message_field(self, driver):
         """Test the message field input."""
@@ -63,8 +64,8 @@ class TestFormFieldsByID:
 
         # Verify the message
         entered_message = form_page.get_message_value()
-        assert tools_string in entered_message
-        assert longest_tool in entered_message
+        assert tools_string in entered_message, GlobalErrorMessages.TEST_MESSAGE_FIELD_ERROR.value
+        assert longest_tool in entered_message,GlobalErrorMessages.TEST_MESSAGE_FIELD_ERROR.value
 
     def test_form_submission(self, driver):
         """Test the complete form submission process."""
@@ -78,5 +79,5 @@ class TestFormFieldsByID:
 
         # Check alert
         form_page.wait_for_alert()
-        assert "Message received!" in form_page.get_alert_text()
+        assert "Message received!" in form_page.get_alert_text(),GlobalErrorMessages.TEST_FORM_SUBMISSION_ERROR.value
         form_page.accept_alert()

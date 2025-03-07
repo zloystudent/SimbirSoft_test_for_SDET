@@ -36,10 +36,6 @@ class BasePage:
         """Get an attribute of an element."""
         return self.find_element(locator).get_attribute(attribute)
 
-    def wait_for_element(self, locator, timeout=10):
-        """Wait for an element to be visible."""
-        return self.driver.wait.until(EC.visibility_of_element_located(locator))
-
     def wait_for_alert(self):
         """Wait for an alert to be present."""
         return self.driver.wait.until(EC.alert_is_present())
