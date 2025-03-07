@@ -17,7 +17,7 @@ permissions:
   pages: write
   id-token: write
 jobs:
-  test__run: 
+  test_run: 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -36,34 +36,34 @@ jobs:
         id: test_flag
         run: echo "test_executed=false" >> $GITHUB_OUTPUT
       
-      - name: All__tests
-        if: github.event.inputs.deployment__target == 'All__tests'
+      - name: All_tests
+        if: github.event.inputs.deployment_target == 'All_tests'
         run: |
           pytest --alluredir=./allure-results
           echo "test_executed=true" >> $GITHUB_OUTPUT
         continue-on-error: true
         id: all_tests
       
-      - name: Tests__by__xpath
-        if: github.event.inputs.deployment__target == 'Tests__by__xpath'
+      - name: Tests_by_xpath
+        if: github.event.inputs.deployment_target == 'Tests_by_xpath'
         run: |
-          pytest tests/test__form__fields__by__xpath.py --alluredir=./allure-results
+          pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results
           echo "test_executed=true" >> $GITHUB_OUTPUT
         continue-on-error: true
         id: xpath_tests
       
-      - name: Tests__by__CSS
-        if: github.event.inputs.deployment__target == 'Tests__by__CSS'
+      - name: Tests_by_CSS
+        if: github.event.inputs.deployment_target == 'Tests_by_CSS'
         run: |
-          pytest tests/test__form__fields__by__css.py --alluredir=./allure-results
+          pytest tests/test_form_fields_by_css.py --alluredir=./allure-results
           echo "test_executed=true" >> $GITHUB_OUTPUT
         continue-on-error: true
         id: css_tests
       
-      - name: Tests__by__ID
-        if: github.event.inputs.deployment__target == 'Tests__by__ID'
+      - name: Tests_by_ID
+        if: github.event.inputs.deployment_target == 'Tests_by_ID'
         run: |
-          pytest tests/test__form__fields__by_id.py --alluredir=./allure-results
+          pytest tests/test_form_fields_by_id.py --alluredir=./allure-results
           echo "test_executed=true" >> $GITHUB_OUTPUT
         continue-on-error: true
         id: id_tests
@@ -82,37 +82,35 @@ jobs:
           path: allure-results
           retention-days: 1
 
-  
-    
-    generate-report:
-        runs-on: ubuntu-latest
-        needs: test_run
-        name: Generate report
-        steps:
-        - uses: actions/setup-java@v3
-          with:
-            distribution: 'microsoft' 
-            java-version: '21'
-        - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.28.1/allure-2.28.1.tgz && sudo tar -zxvf allure-2.28.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.28.1/bin/allure /usr/bin/allure
-        - name: Download all workflow run artifacts
-          uses: actions/download-artifact@v3
-        - run: allure generate -c allure-results -o _site
-        - name: Store generated report
-          uses: actions/upload-artifact@v3
-          with:
-            name: _site
-            path: _site
-            retention-days: 1
+  generate-report:
+    runs-on: ubuntu-latest
+    needs: test_run
+    name: Generate report
+    steps:
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft' 
+          java-version: '21'
+      - run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.28.1/allure-2.28.1.tgz && sudo tar -zxvf allure-2.28.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.28.1/bin/allure /usr/bin/allure
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+      - run: allure generate -c allure-results -o _site
+      - name: Store generated report
+        uses: actions/upload-artifact@v3
+        with:
+          name: _site
+          path: _site
+          retention-days: 1
 
-    publish-report:
-        runs-on: ubuntu-latest
-        needs: generate-report
-        name: Report publication
-        steps:
-        - name: Download all workflow run artifacts
-          uses: actions/download-artifact@v3
-        - name: Upload Pages artifact
-          uses: actions/upload-pages-artifact@v2
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@v1.2.9
+  publish-report:
+    runs-on: ubuntu-latest
+    needs: generate-report
+    name: Report publication
+    steps:
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1.2.9
