@@ -17,35 +17,71 @@ permissions:
   pages: write
   id-token: write
 jobs:
-    test_run: 
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-            - name: Setup Python
-              uses: actions/setup-python@v4
-              with:
-                python-version: "3.12.3"
-            - name: Install Chrome
-              run: sudo apt-get install google-chrome-stable
-            - name: Install dependencies
-              run: pip install -r requirements.txt
-            - name: All_tests
-              if: github.event.inputs.deployment_target == 'All_tests'
-              run: pytest --alluredir=./allure-results
-              continue-on-error: true
-            - name: Tests_by_xpath
-              if: github.event.inputs.deployment_target == 'Tests_by_xpath'
-              run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results
-              continue-on-error: true
-            - name: Tests_by_CSS
-              if: github.event.inputs.deployment_target == 'Tests_by_CSS'
-              run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results
-              continue-on-error: true
-            - name: Tests_by_ID
-              if: github.event.inputs.deployment_target == 'Tests_by_ID'
-              run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results
-              continue-on-error: true
+  test__run: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12.3"
+      - name: Install Chrome
+        run: sudo apt-get install google-chrome-stable
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      # Добавляем маркер для отслеживания выполнения тестов
+      - name: Set test execution flag
+        id: test_flag
+        run: echo "test_executed=false" >> $GITHUB_OUTPUT
+      
+      - name: All__tests
+        if: github.event.inputs.deployment__target == 'All__tests'
+        run: |
+          pytest --alluredir=./allure-results
+          echo "test_executed=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+        id: all_tests
+      
+      - name: Tests__by__xpath
+        if: github.event.inputs.deployment__target == 'Tests__by__xpath'
+        run: |
+          pytest tests/test__form__fields__by__xpath.py --alluredir=./allure-results
+          echo "test_executed=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+        id: xpath_tests
+      
+      - name: Tests__by__CSS
+        if: github.event.inputs.deployment__target == 'Tests__by__CSS'
+        run: |
+          pytest tests/test__form__fields__by__css.py --alluredir=./allure-results
+          echo "test_executed=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+        id: css_tests
+      
+      - name: Tests__by__ID
+        if: github.event.inputs.deployment__target == 'Tests__by__ID'
+        run: |
+          pytest tests/test__form__fields__by_id.py --alluredir=./allure-results
+          echo "test_executed=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+        id: id_tests
+      
+      - name: Store allure results
+        # Запускаем только если хотя бы один из тестов был выполнен
+        if: |
+          always() && 
+          (steps.all_tests.outputs.test_executed == 'true' || 
+           steps.xpath_tests.outputs.test_executed == 'true' || 
+           steps.css_tests.outputs.test_executed == 'true' || 
+           steps.id_tests.outputs.test_executed == 'true')
+        uses: actions/upload-artifact@v3   
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 1
+
   
     
     generate-report:
