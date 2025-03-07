@@ -22,6 +22,8 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
+            - name: Create allure-results directory
+              run: mkdir -p allure-results
             - name: Setup Python
               uses: actions/setup-python@v4
               with:
