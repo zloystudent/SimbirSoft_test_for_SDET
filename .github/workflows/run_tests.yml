@@ -69,7 +69,8 @@ jobs:
         id: id_tests
 
       - name: Check allure-results directory
-        run: ls -la allure-results
+        run: find / -name "*result.json*" 2>/dev/null
+
       
 
   generate-report:
