@@ -52,7 +52,6 @@ jobs:
           REPORT_ID=$(curl -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version:2022-11-28" "https://api.github.com/repos/zloystudent/SimbirSoft_test_for_SDET/actions/artifacts?name=github-pages" | python3 -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);")
           curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ github.token }}" -H "X-GitHub-Api-Version:2022-11-28" https://api.github.com/repos/zloystudent/SimbirSoft_test_for_SDET/actions/artifacts/$REPORT_ID/zip -o pages.zip
       - name: Extract archives
-      - name: Extract archives
         run: |
           mkdir -p allure-results
           unzip artifacts.zip -d allure-results || true
