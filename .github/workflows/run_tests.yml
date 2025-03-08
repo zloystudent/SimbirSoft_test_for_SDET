@@ -37,10 +37,6 @@ jobs:
           retain_days: 2
           keep_minimum_runs: 6
 
-  download-history:
-    runs-on: ubuntu-latest
-    name: Download history
-
   test_run: 
     runs-on: ubuntu-latest
     steps:
