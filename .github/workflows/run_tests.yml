@@ -82,25 +82,25 @@ jobs:
         uses: actions/download-artifact@v4
       - name: All_tests
         if: github.event.inputs.deployment_target == 'All_tests' || github.event_name == 'schedule'
-        run: pytest --alluredir=./allure-results-current
+        run: pytest --alluredir=./allure-results
         continue-on-error: true
       - name: Tests_by_xpath
         if: github.event.inputs.deployment_target == 'Tests_by_xpath' && github.event_name != 'schedule'
-        run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results-current
+        run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results
         continue-on-error: true
       - name: Tests_by_CSS
         if: github.event.inputs.deployment_target == 'Tests_by_CSS' && github.event_name != 'schedule'
-        run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results-current
+        run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results
         continue-on-error: true
       - name: Tests_by_ID
         if: github.event.inputs.deployment_target == 'Tests_by_ID' && github.event_name != 'schedule'
-        run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results-current
+        run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results
         continue-on-error: true
       - name: Store allure results old
         uses: actions/upload-artifact@v4  
         with:
           name: allure-results-current
-          path: allure-results-current
+          path: allure-results
           retention-days: 1    
 
   generate-report:
