@@ -4,6 +4,6 @@
 
 Реализовано формирование allure отчетов на GitHub Actions.
 Тесты запускаются вручную и по расписанию, раз в 10 минут.
-С сохранением истории запусков.
+
 
 https://zloystudent.github.io/SimbirSoft_test_for_SDET/
