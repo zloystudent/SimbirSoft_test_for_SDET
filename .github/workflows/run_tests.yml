@@ -18,6 +18,10 @@ permissions:
   contents: read
   pages: write
   id-token: write
+
+env:
+  DEFAULT_DEPLOYMENT_TARGET: All_tests
+
 jobs:
   del_runs:
     runs-on: ubuntu-latest
@@ -33,6 +37,10 @@ jobs:
           retain_days: 2
           keep_minimum_runs: 6
 
+  download-history:
+    runs-on: ubuntu-latest
+    name: Download history
+
   test_run: 
     runs-on: ubuntu-latest
     steps:
@@ -47,19 +55,19 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: All_tests
-        if: github.event.inputs.deployment_target == 'All_tests'
+        if: github.event.inputs.deployment_target == 'All_tests' || github.event_name == 'schedule'
         run: pytest --alluredir=./allure-results
         continue-on-error: true
       - name: Tests_by_xpath
-        if: github.event.inputs.deployment_target == 'Tests_by_xpath'
+        if: github.event.inputs.deployment_target == 'Tests_by_xpath' && github.event_name != 'schedule'
         run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results
         continue-on-error: true
       - name: Tests_by_CSS
-        if: github.event.inputs.deployment_target == 'Tests_by_CSS'
+        if: github.event.inputs.deployment_target == 'Tests_by_CSS' && github.event_name != 'schedule'
         run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results
         continue-on-error: true
       - name: Tests_by_ID
-        if: github.event.inputs.deployment_target == 'Tests_by_ID'
+        if: github.event.inputs.deployment_target == 'Tests_by_ID' && github.event_name != 'schedule'
         run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results
         continue-on-error: true
       - name: Store allure results
