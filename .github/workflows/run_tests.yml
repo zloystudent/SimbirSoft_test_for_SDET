@@ -36,37 +36,10 @@ jobs:
           repository: ${{ github.repository }}
           retain_days: 2
           keep_minimum_runs: 6
-  
-  download-history:
-    runs-on: ubuntu-latest
-    name: Download history
-    steps:
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12.3"     
-      - name: Download artifacts
-        run: |
-          ARTIFACT_ID=$(curl -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version:2022-11-28" "https://api.github.com/repos/zloystudent/SimbirSoft_test_for_SDET/actions/artifacts?name=allure-results" | python3 -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);")
-          curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ github.token }}" -H "X-GitHub-Api-Version:2022-11-28" https://api.github.com/repos/zloystudent/SimbirSoft_test_for_SDET/actions/artifacts/$ARTIFACT_ID/zip -o artifacts.zip
-          REPORT_ID=$(curl -L -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version:2022-11-28" "https://api.github.com/repos/zloystudent/SimbirSoft_test_for_SDET/actions/artifacts?name=github-pages" | python3 -c "import sys, json; print(json.load(sys.stdin)['artifacts'][0]['id']);")
-          curl -L -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ github.token }}" -H "X-GitHub-Api-Version:2022-11-28" https://api.github.com/repos/zloystudent/SimbirSoft_test_for_SDET/actions/artifacts/$REPORT_ID/zip -o pages.zip
-      - name: Extract archives
-        run: |
-          mkdir allure-results && unzip artifacts.zip -d allure-results
-          mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xvf old_pages/artifact.tar -C pages_history
-          cp pages_history/history/* allure-results && cp -r pages_history/history allure-results
 
-      - name: Store allure results
-        uses: actions/upload-artifact@v4  
-        with:
-          name: allure-results
-          path: allure-results
-          retention-days: 1    
   
   test_run: 
     runs-on: ubuntu-latest
-    needs: download-history
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -86,21 +59,21 @@ jobs:
         continue-on-error: true
       - name: Tests_by_xpath
         if: github.event.inputs.deployment_target == 'Tests_by_xpath' && github.event_name != 'schedule'
-        run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results-current
+        run: pytest tests/test_form_fields_by_xpath.py --alluredir=./allure-results
         continue-on-error: true
       - name: Tests_by_CSS
         if: github.event.inputs.deployment_target == 'Tests_by_CSS' && github.event_name != 'schedule'
-        run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results-current
+        run: pytest tests/test_form_fields_by_css.py --alluredir=./allure-results
         continue-on-error: true
       - name: Tests_by_ID
         if: github.event.inputs.deployment_target == 'Tests_by_ID' && github.event_name != 'schedule'
-        run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results-current
+        run: pytest tests/test_form_fields_by_id.py --alluredir=./allure-results
         continue-on-error: true
-      - name: Store allure results old
+      - name: Store allure results
         uses: actions/upload-artifact@v4  
         with:
-          name: allure-results-current
-          path: allure-results-current
+          name: allure-results
+          path: allure-results
           retention-days: 1    
   
   generate-report:
