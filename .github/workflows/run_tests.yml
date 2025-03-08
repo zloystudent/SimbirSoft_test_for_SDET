@@ -1,4 +1,4 @@
-мname: SimbirSoft_test_for_SDET
+name: SimbirSoft_test_for_SDET
 on:
   workflow_dispatch:
     inputs:
